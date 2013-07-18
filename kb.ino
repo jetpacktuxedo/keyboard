@@ -1,3 +1,4 @@
+#include <stdlib.h>
 
 // Declare LED ports.
 // On the Teensy 3.0 the board LED is port 13. This may not be true on other versions of the teensy. Check your documentation.
@@ -5,20 +6,23 @@ int led = 13;
 
 // I used these ports because they were easilly accesable at the time. Ideally you should use ports that support PWM.
 // In the case of the Teensy 3.0 it should be 3-6, 9, 10, and 20-23
-int r = 21;
-int g = 14;
-int b = 12;
+int r = 3;
+int g = 5;
+int b = 4;
 
 // Declare the keys. I was using the old WASD sample pack, so no clear. :(
 int black = 1;
-int red = 3;
-int blue = 17;
-int brown = 19;
+int red = 21;
+int blue = 19;
+int brown = 15;
 
 // Declare an empty array to hold the key buffer until it gets sent.
 // This will allow the teensy to send multiple simultaneous keypresses.
 int key[] = {0,0,0,0,0,0};
 int mod = 0;
+
+//declare variables to hold the current values of the LEDs
+int curRed = 0, curGreen = 0, curBlue = 0;
 
 // the setup routine runs once when you press reset:
 void setup() {                
@@ -34,7 +38,7 @@ void setup() {
   pinMode(black, INPUT);
   pinMode(blue, INPUT); 
   pinMode(brown, INPUT);
-  pinMode(red, INPUT);  
+  pinMode(red, INPUT); 
 }
 
 // This function will take keypresses passed to it (in the form of a char, for no particular reason)
@@ -62,6 +66,32 @@ void sendKey(){
   Keyboard.send_now();
   for(int i = 0; i < 6; i++){ key[i] = 0; }
   mod = 0;
+}
+
+void quickFade(int red, int green, int blue){
+  boolean br=false, bg=false, bb=false;
+  
+  while(!br || !bg || !bb){
+   if(curRed < red) curRed ++;
+   else if(curRed > red) curRed --;
+   else br = true;
+   if(curGreen < green) curGreen ++;
+   else if(curGreen > green) curGreen --;
+   else bg = true;
+   if(curBlue < blue) curBlue ++;
+   else if(curBlue > blue) curBlue --;
+   else bb = true;
+   
+   delay(5);
+   
+   LEDSet();
+  } 
+}
+
+void LEDSet(){
+  analogWrite(r, curRed);
+  analogWrite(g, curGreen);
+  analogWrite(b, curBlue);
 }
 
 // the loop routine runs over and over again forever:
@@ -112,5 +142,13 @@ void loop() {
   
   //Now that all of the keys have been polled it is time to send them out!
   sendKey();
+  
+  int randR, randG, randB;
+  
+  randR = rand() % 255;
+  randG = rand() % 255;
+  randB = rand() % 255;
+  
+  quickFade(randR, randG, randB);
 }
 
