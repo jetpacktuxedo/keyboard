@@ -7,26 +7,16 @@ const byte ROWS = 4;
 const byte COLS = 7;
 
 char layout[ROWS][COLS] = {
-  {
-    KEY_1,KEY_2,KEY_3,KEY_4,KEY_5,KEY_6,KEY_7  }
-  ,
-  {
-    KEY_Q,KEY_W,KEY_E,KEY_R,KEY_T,KEY_Y,KEY_U  }
-  ,
-  {
-    KEY_A,KEY_S,KEY_D,KEY_F,KEY_G,KEY_H,KEY_J  }
-  ,
-  {
-    KEY_Z,KEY_X,KEY_C,KEY_V,KEY_B,KEY_N,KEY_M  }
+  {KEY_1,KEY_2,KEY_3,KEY_4,KEY_5,KEY_6,KEY_7},
+  {KEY_Q,KEY_W,KEY_E,KEY_R,KEY_T,KEY_Y,KEY_U},
+  {KEY_A,KEY_S,KEY_D,KEY_F,KEY_G,KEY_H,KEY_J},
+  {KEY_Z,KEY_X,KEY_C,KEY_V,KEY_B,KEY_N,KEY_M}
 };
 
-byte row[ROWS] = {
-  21,20,19,18};
-byte col[COLS] = {
-  3,4,5,6,7,8,9};
+byte row[ROWS] = {21,20,19,18};
+byte col[COLS] = {3,4,5,6,7,8,9};
 
-int key[] = {
-  0,0,0,0,0,0};
+int key[] = {0,0,0,0,0,0};
 
 // the setup() method runs once, when the sketch starts
 
@@ -60,9 +50,7 @@ void setKey(int keynum, char keypress){
 // This method sends the depressed keys and clears the buffer.
 void sendKey(){
   Keyboard.send_now();
-  for(int x = 0; x < 6; x++){ 
-    key[x] = 0; 
-  }
+  for(int x = 0; x < 6; x++){ key[x] = 0; }
   Keyboard.set_key1(key[0]);
   Keyboard.set_key2(key[1]);
   Keyboard.set_key3(key[2]);
@@ -74,22 +62,17 @@ void sendKey(){
 void loop() {
   int keycount = 0;
   for (int c = 0; c < COLS; c++) {
-    digitalWrite(ledPin, HIGH);   // set the LED on
     digitalWrite(col[c], HIGH);
-    delay(2);
     for (int r = 0; r < ROWS; r++) {
       if (digitalRead(row[r]) && keycount < 6){
         setKey(keycount, layout[r][c]);
         keycount ++;
       }
-      delay(1);
     }
-    digitalWrite(ledPin, LOW);    // set the LED off
     digitalWrite(col[c], LOW);
   }
   //Now that all of the keys have been polled it is time to send them out!
   sendKey();
-
 }
 
 
