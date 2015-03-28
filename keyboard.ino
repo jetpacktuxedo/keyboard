@@ -46,7 +46,7 @@ void setKey(int keynum, char keypress){
   Keyboard.set_key5(key[4]);
   Keyboard.set_key6(key[5]);
 }
-
+s
 // This method sends the depressed keys and clears the buffer.
 void sendKey(){
   Keyboard.send_now();
@@ -73,6 +73,7 @@ void loop() {
   }
   //Now that all of the keys have been polled it is time to send them out!
   sendKey();
+  delay(15);
 }
 
 
