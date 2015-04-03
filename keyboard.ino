@@ -91,6 +91,17 @@ void loop() {
     }
     digitalWrite(col[c], LOW);
   }
+  
+  // Explicitly check the bottom left key that I am using as shift.
+  // For some reason, modifier keys work for every key read *before* the modifier
+  // This bit ensures that my only modifier is the last key that gets read in.
+  // This is not meant to be a permanent fix, but is a really hacky workaround.
+  digitalWrite(col[0], HIGH);
+  if (digitalRead(row[3])){
+    setKey(layout[3][0]);
+  }
+  digitalWrite(col[0], LOW);
+    
   //Now that all of the keys have been polled it is time to send them out!
   sendKey();
   delay(15);
