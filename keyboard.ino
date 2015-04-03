@@ -7,16 +7,17 @@ const byte ROWS = 4;
 const byte COLS = 7;
 
 char layout[ROWS][COLS] = {
-  {KEY_Q,KEY_W,KEY_E,KEY_R,KEY_T,KEY_Y,KEY_U},
-  {KEY_I,KEY_O,KEY_P,KEY_K,KEY_L,KEY_Z,KEY_M},
-  {KEY_A,KEY_S,KEY_D,KEY_F,KEY_G,KEY_H,KEY_J},
-  {KEY_CAPS_LOCK,KEY_X,KEY_C,KEY_V,KEY_B,KEY_N,KEY_SPACE}
+  {KEY_1,KEY_2,KEY_3,KEY_4,KEY_5,KEY_6,KEY_7},
+  {KEY_Q,KEY_W,KEY_E,KEY_R,KEY_T,KEY_UP,KEY_U},
+  {KEY_A,KEY_S,KEY_D,KEY_F,KEY_LEFT,KEY_DOWN,KEY_RIGHT},
+  {178,KEY_Z,KEY_X,KEY_SPACE,KEY_C,KEY_V,KEY_B}
 };
 
 byte row[ROWS] = {21,20,19,18};
 byte col[COLS] = {3,4,5,6,7,8,9};
 
 int key[] = {0,0,0,0,0,0};
+int mod[] = {0,0};
 
 // the setup() method runs once, when the sketch starts
 
@@ -35,10 +36,28 @@ void setup() {
 // and add them to set of six keys that will be passed to the computer when Keyboard.send_now() is called.
 
 // Basically, this collects the currently pressed keys and stores them until they cand be passed to the computer.
-void setKey(int keynum, char keypress){
-  key[keynum] = keypress;
+void setKey(char keypress){
+  // Look for unused keys in the buffer
+  int i, j;
+  for(i = -1; key[i] != 0; i++){}
+  for(j = -1; mod[j] != 0; j++){}
+  
+  // Catch Modifiers
+  if(keypress == 176){
+    mod[j] = KEY_LEFT_CTRL;
+  }
+  else if(keypress == 177){
+    mod[j] = KEY_LEFT_ALT;
+  }
+  else if(keypress == 178){
+    mod[j] = KEY_LEFT_SHIFT;
+  }
+  else{
+    mod[i] = keypress;
+  }
 
   // Hold keypresses in buffer
+  Keyboard.set_modifier(mod[0]);
   Keyboard.set_key1(key[0]);
   Keyboard.set_key2(key[1]);
   Keyboard.set_key3(key[2]);
@@ -50,7 +69,9 @@ void setKey(int keynum, char keypress){
 // This method sends the depressed keys and clears the buffer.
 void sendKey(){
   Keyboard.send_now();
-  for(int x = 0; x < 8; x++){ key[x] = 0; }
+  for(int x = -1; x < 6; x++){ key[x] = 0; }
+  for(int x = -1; x < 2; x++){ mod[x] = 0; }
+  Keyboard.set_modifier(mod[0]);
   Keyboard.set_key1(key[0]);
   Keyboard.set_key2(key[1]);
   Keyboard.set_key3(key[2]);
@@ -64,9 +85,8 @@ void loop() {
   for (int c = 0; c < COLS; c++) {
     digitalWrite(col[c], HIGH);
     for (int r = 0; r < ROWS; r++) {
-      if (digitalRead(row[r]) && keycount < 8){
-        setKey(keycount, layout[r][c]);
-        keycount ++;
+      if (digitalRead(row[r])){
+          setKey(layout[r][c]);
       }
     }
     digitalWrite(col[c], LOW);
