@@ -7,7 +7,7 @@ const byte ROWS = 4;
 const byte COLS = 7;
 
 char layout[ROWS][COLS] = {
-  {KEY_1,KEY_2,KEY_3,KEY_4,KEY_5,KEY_6,KEY_7},
+  {KEY_ESC,KEY_2,KEY_3,KEY_4,KEY_5,KEY_6,KEY_7},
   {KEY_Q,KEY_W,KEY_E,KEY_R,KEY_T,KEY_UP,KEY_U},
   {KEY_A,KEY_S,KEY_D,KEY_F,KEY_LEFT,KEY_DOWN,KEY_RIGHT},
   {178,KEY_Z,KEY_X,KEY_SPACE,KEY_C,KEY_V,KEY_B}
@@ -39,8 +39,8 @@ void setup() {
 void setKey(char keypress){
   // Look for unused keys in the buffer
   int i, j;
-  for(i = -1; key[i] != 0; i++){}
-  for(j = -1; mod[j] != 0; j++){}
+  for(i = 0; key[i] != 0; i++){}
+  for(j = 0; mod[j] != 0; j++){}
   
   // Catch Modifiers
   if(keypress == 176){
@@ -53,7 +53,7 @@ void setKey(char keypress){
     mod[j] = KEY_LEFT_SHIFT;
   }
   else{
-    mod[i] = keypress;
+    key[i] = keypress;
   }
 
   // Hold keypresses in buffer
@@ -69,8 +69,8 @@ void setKey(char keypress){
 // This method sends the depressed keys and clears the buffer.
 void sendKey(){
   Keyboard.send_now();
-  for(int x = -1; x < 6; x++){ key[x] = 0; }
-  for(int x = -1; x < 2; x++){ mod[x] = 0; }
+  for(int x = 0; x < 6; x++){ key[x] = 0; }
+  for(int x = 0; x < 2; x++){ mod[x] = 0; }
   Keyboard.set_modifier(mod[0]);
   Keyboard.set_key1(key[0]);
   Keyboard.set_key2(key[1]);
@@ -91,16 +91,6 @@ void loop() {
     }
     digitalWrite(col[c], LOW);
   }
-  
-  // Explicitly check the bottom left key that I am using as shift.
-  // For some reason, modifier keys work for every key read *before* the modifier
-  // This bit ensures that my only modifier is the last key that gets read in.
-  // This is not meant to be a permanent fix, but is a really hacky workaround.
-  digitalWrite(col[0], HIGH);
-  if (digitalRead(row[3])){
-    setKey(layout[3][0]);
-  }
-  digitalWrite(col[0], LOW);
     
   //Now that all of the keys have been polled it is time to send them out!
   sendKey();
